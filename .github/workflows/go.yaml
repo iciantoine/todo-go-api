@@ -1,0 +1,62 @@
+name: Golang workflow
+on:
+  pull_request:
+  push:
+    tags:
+      - v*
+    branches:
+      - develop
+      - master
+
+env:
+  CGO_ENABLED: 1
+  GO111MODULE: on
+jobs:
+  commitlint:
+    name: Check commit message format
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - uses: wagoid/commitlint-github-action@v5
+  linter:
+    name: Run all linters
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-go@v3
+        with:
+          go-version: '1.20'
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v3
+        with:
+          version: latest
+          args: --build-tags=integration
+  unit:
+    name: Run unit tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-go@v3
+        with:
+          go-version: '1.20'
+      - run: make unit
+  integration:
+    runs-on: ubuntu-latest
+    name: Run integration tests
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-go@v3
+        with:
+          go-version: '1.20'
+      - run: make prepare integration
+    services:
+      db:
+        image: postgres:15
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_USER: todo
+          POSTGRES_PASSWORD: todo
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5

@@ -1,0 +1,5 @@
+openapi: 3.1.0
+info:
+  title: TODO Go API
+  version: 0.0.1
+paths: {} # No endpoints defined yet
