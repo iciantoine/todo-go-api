@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"context"
+	"os"
 	"os/signal"
 	"syscall"
 )
@@ -19,4 +20,13 @@ func Run(f func(context.Context) error) error {
 	defer cancel()
 
 	return f(ctx)
+}
+
+// Env returns the value of the given environment variable or uses the provided
+// fallback value instead.
+func Env(name, fallback string) string {
+	if val, ok := os.LookupEnv(name); ok {
+		return val
+	}
+	return fallback
 }

@@ -11,6 +11,12 @@ Install [golangci-lint](https://github.com/golangci/golangci-lint):
 brew install golangci-lint
 ```
 
+### PostgreSQL
+You will need psql binary. On MacOS install it via homebrew:
+```bash
+brew install libpq
+```
+
 ## Development
 ### Local build
 ```bash
