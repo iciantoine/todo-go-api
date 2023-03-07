@@ -11,7 +11,7 @@ lint: ## Run the linter
 unit: ## Run unit tests
 	go test -race -count=1 ./...
 
-integration: reset-db ## Run integration tests
+integration: reset-db fixtures ## Run integration tests
 	go test -race -p=1 -count=1 --tags=integration ./...
 
 migrate-up: ## Migrate DB schema to newer version
@@ -27,3 +27,6 @@ run-server:## Run the server on the host
 
 build: test
 	go build -o dist/local/server cmd/server/main.go
+
+fixtures:
+	PGPASSWORD=todo psql -v ON_ERROR_STOP=1 -U todo -h localhost todo -f database/fixtures.sql
