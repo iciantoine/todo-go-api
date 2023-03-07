@@ -6,6 +6,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/iciantoine/todo-go-api/database"
+	"github.com/iciantoine/todo-go-api/handler"
+	"github.com/iciantoine/todo-go-api/repository"
 	_ "github.com/jackc/pgx/v5/stdlib" // PostgreSQL driver
 	"github.com/rs/zerolog/log"
 )
@@ -28,16 +30,21 @@ func Listen(parent context.Context, opts ...Option) error {
 	}
 	defer conn.Close()
 
-	return router().Run(cfg.Application.Addr)
+	trepo := repository.NewTodoRepo(conn)
+
+	return router(trepo).Run(cfg.Application.Addr)
 }
 
-func router() *gin.Engine {
+func router(trepo repository.TodoRepo) *gin.Engine {
 	router := gin.Default()
 
 	// default handler for unknown routes
 	router.NoRoute(func(ctx *gin.Context) {
 		ctx.String(http.StatusNotImplemented, http.StatusText(http.StatusNotImplemented))
 	})
+
+	router.GET("/todo", handler.NewGetTodosHandler(trepo))
+	router.POST("/todo", handler.NewPostTodoHandler(trepo))
 
 	return router
 }

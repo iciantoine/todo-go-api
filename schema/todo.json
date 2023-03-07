@@ -1,0 +1,21 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "properties": {
+        "id": {
+            "type": "string",
+            "format": "uuid"
+        },
+        "created_at": {
+            "type": "string",
+            "format": "date-time"
+        },
+        "is_done": {
+            "type": "boolean"
+        },
+        "message": {
+            "type": "string"
+        }
+    },
+    "required:": ["id", "created_at", "is_done", "message"]
+}
