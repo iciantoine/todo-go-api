@@ -1,5 +1,85 @@
-openapi: 3.1.0
+openapi: 3.0.3
 info:
   title: TODO Go API
-  version: 0.0.1
-paths: {} # No endpoints defined yet
+  version: 1.0.0
+servers:
+  - url: https://todo-go-api-staging.herokuapp.com
+    description: Staging
+  - url: https://todo-go-api-prod.herokuapp.com
+    description: Production
+paths:
+  /todo:
+    post:
+      tags:
+        - todo
+      summary: Add a new todo
+      operationId: addTodo
+      requestBody:
+        description: Create a new todo
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Todo'
+        required: true
+      responses:
+        '201':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Todo'
+        '400':
+          description: Bad Request
+        '500':
+          description: Unexpected error occurred
+    get:
+      tags:
+        - todo
+      summary: Find todos
+      operationId: getTodo
+      parameters:
+        - name: id
+          in: query
+          required: false
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Successful operation without id given
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Todo'
+        '200 (single)':
+          description: Successful operation with id given
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Todo'
+        '400':
+          description: Invalid id value
+        '404':
+          description: Not found when id is given
+        '500':
+          description: Unexpected error occurred
+components:
+  schemas:
+    Todo:
+      required:
+        - is_done
+        - message
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        is_done:
+          type: boolean
+        message:
+          type: string
