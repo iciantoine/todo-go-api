@@ -1,0 +1,11 @@
+build:
+  docker:
+    web: Dockerfile
+run:
+  release:
+    command:
+      - make migrate-up
+    image: web
+  web:
+    command:
+      - /app/linux/server

@@ -1,0 +1,5 @@
+{
+    "name": "TODO Go API",
+    "description": "Simple Todo list Go server. Uses Go and PostgreSQL",
+    "stack": "container"
+}

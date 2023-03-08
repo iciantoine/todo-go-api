@@ -17,7 +17,8 @@ func main() {
 func run(ctx context.Context) error {
 	return server.Listen(ctx,
 		server.WithApplicationAddress(
-			cmd.Env("APPLICATION_ADDR", "127.0.0.1:8080"),
+			cmd.Env("APPLICATION_ADDR", "127.0.0.1"),
+			cmd.Env("PORT", "8080"),
 		),
 		server.WithDatabase(
 			cmd.Env("DB_USERNAME", "todo"),

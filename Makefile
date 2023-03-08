@@ -3,7 +3,7 @@
 test: lint unit integration ## Run all tests
 
 prepare: ## Prepare project: install dependencies
-	go install github.com/jackc/tern@latest
+	go install github.com/jackc/tern/v2@latest
 
 lint: ## Run the linter
 	golangci-lint run --build-tags=integration
@@ -28,5 +28,12 @@ run-server:## Run the server on the host
 build: test
 	go build -o dist/local/server cmd/server/main.go
 
+build-linux: ## Build for deployment
+	CGO_ENABLED=1 GOOS=linux go build -o dist/linux/server cmd/server/main.go
+
 fixtures:
 	PGPASSWORD=todo psql -v ON_ERROR_STOP=1 -U todo -h localhost todo -f database/fixtures.sql
+
+dist-docker: build-linux ## Build Docker image
+	rm -rf dist/migrations
+	cp -r database/migrations dist/

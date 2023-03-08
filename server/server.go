@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -32,7 +33,7 @@ func Listen(parent context.Context, opts ...Option) error {
 
 	trepo := repository.NewTodoRepo(conn)
 
-	return router(trepo).Run(cfg.Application.Addr)
+	return router(trepo).Run(fmt.Sprintf(":%s", cfg.Application.Port))
 }
 
 func router(trepo repository.TodoRepo) *gin.Engine {

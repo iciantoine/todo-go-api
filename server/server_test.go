@@ -11,6 +11,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strconv"
 	"testing"
 	"time"
 
@@ -29,7 +30,7 @@ func TestListen(t *testing.T) {
 	defer cancel()
 
 	appAddr := addr()
-	rootURL := fmt.Sprintf("http://%s", appAddr)
+	rootURL := fmt.Sprintf("http://127.0.0.1:%s", appAddr)
 
 	t.Run("error on wrong options", func(t *testing.T) {
 		assert.Error(t, server.Listen(ctx, server.WithLogLevel("test")))
@@ -41,7 +42,7 @@ func TestListen(t *testing.T) {
 
 	go func() {
 		assert.NoError(t, server.Listen(ctx,
-			server.WithApplicationAddress(appAddr),
+			server.WithApplicationAddress("127.0.0.1", appAddr),
 			server.WithDatabase("todo", "todo", "127.0.0.1", "5432", "todo", "disable"),
 			server.WithLogLevel("debug"),
 		))
@@ -155,7 +156,7 @@ func TestListen(t *testing.T) {
 	})
 }
 
-// addr returns a random, free TCP address.
+// addr returns a random, free TCP port.
 func addr() string {
 	lst, err := net.Listen("tcp", "127.0.0.1:0")
 	if err != nil {
@@ -166,7 +167,7 @@ func addr() string {
 	if !ok {
 		return ""
 	}
-	return addr.String()
+	return strconv.Itoa(addr.Port)
 }
 
 // waitForServer sleeps for a max period until URL is responding
