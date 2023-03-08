@@ -41,6 +41,21 @@ func NewGetTodosHandler(repo TodoRepo) gin.HandlerFunc {
 
 func NewPostTodoHandler(repo TodoRepo) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
+		var req model.Todo
+		if err := ctx.ShouldBindJSON(&req); err != nil {
+			log.Ctx(ctx.Request.Context()).Warn().Err(err).Msg("could not bind request body")
+			ctx.AbortWithStatus(http.StatusBadRequest)
+			return
+		}
+
+		res, err := repo.AddTodo(ctx, req)
+		if err != nil {
+			log.Ctx(ctx.Request.Context()).Error().Err(err).Msg("error while adding todo")
+			ctx.AbortWithStatus(http.StatusInternalServerError)
+			return
+		}
+
+		ctx.JSON(http.StatusCreated, res)
 	}
 }
 

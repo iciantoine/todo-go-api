@@ -3,6 +3,7 @@
 package server_test
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"io"
@@ -115,6 +116,42 @@ func TestListen(t *testing.T) {
 		defer resp.Body.Close()
 
 		assert.Equal(t, http.StatusNotFound, resp.StatusCode)
+	})
+
+	t.Run("201 response on adding todo", func(t *testing.T) {
+		payload := `{
+			"is_done": true,
+			"message": "Lorem ipsum"
+		}`
+		req, _ := http.NewRequest("POST", fmt.Sprintf("%s/todo", rootURL), bytes.NewReader([]byte(payload)))
+
+		resp, err := http.DefaultClient.Do(req)
+		assert.NoError(t, err)
+		defer resp.Body.Close()
+
+		body, err := io.ReadAll(resp.Body)
+		assert.NoError(t, err)
+
+		assert.Equal(t, http.StatusCreated, resp.StatusCode)
+		assert.NotEmpty(t, body)
+		assert.True(t, validateSchema(t, "../schema/todo.json", body))
+	})
+
+	t.Run("400 response on adding todo with non-valid payload", func(t *testing.T) {
+		payload := `{
+			"is_done": true
+		}`
+		req, _ := http.NewRequest("POST", fmt.Sprintf("%s/todo", rootURL), bytes.NewReader([]byte(payload)))
+
+		resp, err := http.DefaultClient.Do(req)
+		assert.NoError(t, err)
+		defer resp.Body.Close()
+
+		body, err := io.ReadAll(resp.Body)
+		assert.NoError(t, err)
+
+		assert.Equal(t, http.StatusBadRequest, resp.StatusCode)
+		assert.Empty(t, body)
 	})
 }
 

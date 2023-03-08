@@ -1,6 +1,7 @@
 package handler_test
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"errors"
@@ -209,6 +210,88 @@ func TestNewGetTodosHandler(t *testing.T) {
 		body, _ := io.ReadAll(resp.Body)
 
 		assert.Equal(t, http.StatusBadRequest, rr.Code)
+		assert.Empty(t, body)
+	})
+}
+
+func TestNewPostTodoHandler(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+
+	t.Run("returns 201 on successful call", func(t *testing.T) {
+		rr := httptest.NewRecorder()
+		ctx, _ := gin.CreateTestContext(rr)
+		payload, err := json.Marshal(map[string]interface{}{
+			"is_done": true,
+			"message": "Lorem ipsum",
+		})
+		assert.NoError(t, err)
+
+		ctx.Request, _ = http.NewRequest("POST", "/todo", bytes.NewReader(payload))
+
+		expected := model.Todo{
+			ID:        uuid.New(),
+			CreatedAt: time.Now(),
+			IsDone:    true,
+			Message:   "Lorem ipsum",
+		}
+		r, err := json.Marshal(expected)
+		assert.NoError(t, err)
+
+		hdlr := handler.NewPostTodoHandler(&stubRepo{
+			todo: expected,
+		})
+		hdlr(ctx)
+
+		resp := rr.Result()
+		defer resp.Body.Close()
+		body, _ := io.ReadAll(resp.Body)
+
+		assert.Equal(t, http.StatusCreated, rr.Code)
+		assert.Equal(t, r, body)
+	})
+
+	t.Run("returns 400 on wrong payload", func(t *testing.T) {
+		rr := httptest.NewRecorder()
+		ctx, _ := gin.CreateTestContext(rr)
+		payload, err := json.Marshal(map[string]interface{}{
+			"is_done": "test",
+		})
+		assert.NoError(t, err)
+
+		ctx.Request, _ = http.NewRequest("POST", "/todo", bytes.NewReader(payload))
+
+		hdlr := handler.NewPostTodoHandler(&stubRepo{})
+		hdlr(ctx)
+
+		resp := rr.Result()
+		defer resp.Body.Close()
+		body, _ := io.ReadAll(resp.Body)
+
+		assert.Equal(t, http.StatusBadRequest, rr.Code)
+		assert.Empty(t, body)
+	})
+
+	t.Run("returns 500 on repo error", func(t *testing.T) {
+		rr := httptest.NewRecorder()
+		ctx, _ := gin.CreateTestContext(rr)
+		payload, err := json.Marshal(map[string]interface{}{
+			"is_done": true,
+			"message": "Lorem ipsum",
+		})
+		assert.NoError(t, err)
+
+		ctx.Request, _ = http.NewRequest("POST", "/todo", bytes.NewReader(payload))
+
+		hdlr := handler.NewPostTodoHandler(&stubRepo{
+			err: errors.New("test"),
+		})
+		hdlr(ctx)
+
+		resp := rr.Result()
+		defer resp.Body.Close()
+		body, _ := io.ReadAll(resp.Body)
+
+		assert.Equal(t, http.StatusInternalServerError, rr.Code)
 		assert.Empty(t, body)
 	})
 }
