@@ -11,9 +11,10 @@ type config struct {
 type Option func(*config) error
 
 // WithApplicationAddress configures the application listen address.
-func WithApplicationAddress(addr string) Option {
+func WithApplicationAddress(addr string, port string) Option {
 	return func(cfg *config) error {
 		cfg.Application.Addr = addr
+		cfg.Application.Port = port
 		return nil
 	}
 }

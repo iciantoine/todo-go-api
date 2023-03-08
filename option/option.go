@@ -33,7 +33,8 @@ func ConfigureLogging(lvl string) error {
 
 // Endpoint is an HTTP endpoint.
 type Endpoint struct {
-	Addr      string
+	Addr string
+	Port string
 }
 
 // Postgres is a connection to PostgreSQL.
