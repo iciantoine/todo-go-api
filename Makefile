@@ -12,7 +12,7 @@ unit: ## Run unit tests
 	go test -race -count=1 ./...
 
 integration: reset-db fixtures ## Run integration tests
-	go test -race -p=1 -count=1 --tags=integration ./...
+	go test -race -p=1 -count=1 --tags=integration ./database ./repository ./server
 
 migrate-up: ## Migrate DB schema to newer version
 	tern migrate -c database/migrations/tern.conf -m database/migrations
