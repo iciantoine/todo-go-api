@@ -10,6 +10,6 @@ import (
 type Todo struct {
 	ID        uuid.UUID `json:"id"`
 	CreatedAt time.Time `json:"created_at"`
-	IsDone    bool      `json:"is_done" binding:"required"`
+	IsDone    bool      `json:"is_done"`
 	Message   string    `json:"message" binding:"required"`
 }

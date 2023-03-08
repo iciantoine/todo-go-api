@@ -69,7 +69,6 @@ components:
   schemas:
     Todo:
       required:
-        - is_done
         - message
       type: object
       properties:
