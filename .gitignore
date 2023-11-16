@@ -13,3 +13,4 @@
 
 # Dist binaries
 /dist/local
+.idea/
