@@ -26,7 +26,7 @@ func Listen(parent context.Context, opts ...Option) error {
 
 	conn, err := database.Connect("pgx", cfg.Database.DSN())
 	if err != nil {
-		log.Error().Err(err).Msg("could not connect to Lydia database")
+		log.Error().Err(err).Msg("could not connect to database")
 		return err
 	}
 	defer conn.Close()

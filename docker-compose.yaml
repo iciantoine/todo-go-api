@@ -10,7 +10,7 @@ services:
       POSTGRES_USER: todo # DB name will have the same value
       POSTGRES_PASSWORD: todo
     healthcheck:
-      test: ["CMD", "pg_isready", "-q", "-d", "reach", "-U", "reach"]
+      test: ["CMD", "pg_isready", "-q", "-d", "todo", "-U", "todo"]
       interval: 5s
       timeout: 45s
       retries: 10
